@@ -1,33 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>2-Player Air Hockey</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hockey Cup</title>
+
+    <!-- Logo Icon -->
+    <link rel="icon" href="./assets/logo.png" type="image/x-icon">
+
     <style>
-        body { margin: 0; overflow: hidden; background: #222; }
-        canvas { display: block; margin: 20px auto; background: #333; border: 2px solid #555; }
-        h1 { color: white; text-align: center; font-family: Arial; }
-        .controls {
-            color: white;
-            text-align: center;
-            font-family: Arial;
-            margin-top: 10px;
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
-        .goals {
-            color: #0f0;
-            text-align: center;
-            font-family: Arial;
-            margin-top: 5px;
+        canvas {
+            display: block;
+            margin: 0 auto;
         }
     </style>
 </head>
 <body>
-    <h1>2-Player Air Hockey</h1>
-    <div class="controls">
-        <span style="color: #f00;">Player 1: WASD</span> | 
-        <span style="color: #00f;">Player 2: Arrow Keys</span>
-    </div>
-    <div class="goals">Score by getting the puck into the green goal areas!</div>
-    <canvas id="gameCanvas" width="800" height="500"></canvas>
-    <script src="game.js"></script>
+    <canvas id="gameCanvas"></canvas>
+    <script type="module" src="./game.js"></script>
 </body>
 </html>
