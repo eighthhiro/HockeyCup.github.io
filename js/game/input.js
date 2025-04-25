@@ -35,11 +35,13 @@ function handleKeyPress(key, isPressed, player1, player2) {
     if (key.toLowerCase() === player1.controls.left.toLowerCase()) player1.keys.left = isPressed;
     if (key.toLowerCase() === player1.controls.right.toLowerCase()) player1.keys.right = isPressed;
     
-    // Player 2 controls
-    if (key === player2.controls.up) player2.keys.up = isPressed;
-    if (key === player2.controls.down) player2.keys.down = isPressed;
-    if (key === player2.controls.left) player2.keys.left = isPressed;
-    if (key === player2.controls.right) player2.keys.right = isPressed;
+    // Player 2 controls - only process if not in AI mode
+    if (window.gameCore && window.gameCore.gameMode !== "1vAI") {
+        if (key === player2.controls.up) player2.keys.up = isPressed;
+        if (key === player2.controls.down) player2.keys.down = isPressed;
+        if (key === player2.controls.left) player2.keys.left = isPressed;
+        if (key === player2.controls.right) player2.keys.right = isPressed;
+    }
 }
 
 export {

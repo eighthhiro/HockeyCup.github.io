@@ -34,7 +34,7 @@ function draw(gameState) {
     
     // Draw overlays if needed
     if (!gameStarted) {
-        drawStartScreen(ctx, canvas);
+        drawStartScreen(ctx, canvas, gameState.gameMode, gameState.aiDifficulty);
     } else if (isPaused) {
         drawPauseScreen(ctx, canvas);
     }
@@ -239,7 +239,7 @@ function drawScores(ctx, canvas, player1Score, player2Score, player1, player2) {
     ctx.fillText(`${player2Score}`, (canvas.width / 4) * 3, canvas.height / 2 + fontSize/3);
 }
 
-function drawStartScreen(ctx, canvas) {
+function drawStartScreen(ctx, canvas, gameMode, aiDifficulty) {
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
@@ -257,7 +257,13 @@ function drawStartScreen(ctx, canvas) {
     
     ctx.font = `${smallTextSize}px Arial`;
     ctx.fillText("Player 1: WASD keys", canvas.width/2, canvas.height/2 + textSize*1.5);
-    ctx.fillText("Player 2: Arrow keys", canvas.width/2, canvas.height/2 + textSize*2.5);
+    
+    if (gameMode === "1vAI") {
+        ctx.fillText(`Player 2: AI (${aiDifficulty})`, canvas.width/2, canvas.height/2 + textSize*2.5);
+    } else {
+        ctx.fillText("Player 2: Arrow keys", canvas.width/2, canvas.height/2 + textSize*2.5);
+    }
+    
     ctx.fillText("Press P to pause", canvas.width/2, canvas.height/2 + textSize*3.5);
 }
 

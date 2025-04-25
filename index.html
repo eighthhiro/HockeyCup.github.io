@@ -7,26 +7,40 @@
 
     <!-- Logo Icon -->
     <link rel="icon" href="./assets/logo.png" type="image/x-icon">
-
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background-color: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        canvas {
-            display: block;
-            margin: 0 auto;
-        }
-    </style>
+    <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-    <canvas id="gameCanvas"></canvas>
-    <script type="module" src="./js/game/main.js"></script>
+    <div id="lobby" class="visible">
+        <div class="lobby-container">
+            <div class="game-logo">
+                <img src="./assets/logo.png" alt="Hockey Cup Logo">
+                <h1>HOCKEY CUP</h1>
+            </div>
+            <div class="menu-container">
+                <button class="menu-btn" data-menu="classic">
+                    <span class="btn-text">CLASSIC</span>
+                    <span class="coming-soon">Coming Soon</span>
+                </button>
+                <button class="menu-btn" data-menu="duels">DUELS</button>
+                <button class="menu-btn" data-menu="stats">STATS</button>  
+                <button class="menu-btn" data-menu="settings">SETTINGS</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="submenu" class="hidden">
+        <div class="submenu-container">
+            <button class="back-btn">← BACK</button>
+            <h2 id="submenu-title">DUELS</h2>
+            <div id="submenu-options"></div>
+        </div>
+    </div>
+
+    <div id="game-container" class="hidden">
+        <button id="exit-game" class="exit-btn">EXIT TO MENU</button>
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <script type="module" src="./js/lobby.js"></script>
 </body>
 </html>

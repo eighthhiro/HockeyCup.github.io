@@ -1,4 +1,6 @@
 // gameCore.js - Contains game state, scoring and core game loop
+let isExitRequested = false;
+import * as ai from './ai.js';
 
 // Game state
 let player1Score = 0;
@@ -8,6 +10,8 @@ let gameStarted = false;
 let isPaused = false;
 let goalFlashTimer = 0;
 let lastUpdateTime = performance.now();
+let gameMode = "1v1";
+let aiDifficulty = "medium";
 
 // Game objects and constants that will be initialized in init()
 let canvas, ctx;
@@ -23,7 +27,7 @@ import * as input from './input.js';
 import * as renderer from './renderer.js';
 
 // Initialize game objects and constants
-function init(canvasElement) {
+function init(canvasElement, params = {}) {
     canvas = canvasElement;
     ctx = canvas.getContext("2d");
     
@@ -32,6 +36,15 @@ function init(canvasElement) {
         logoLoaded = true;
     };
     
+    if (params.mode) {
+        gameMode = params.mode;
+    }
+
+    if (gameMode === "1vAI" && params.difficulty) {
+        aiDifficulty = params.difficulty;
+        ai.initAI(aiDifficulty);
+    }
+
     // Create game objects
     puck = {
         x: canvas.width / 2,
@@ -47,7 +60,7 @@ function init(canvasElement) {
         x: canvas.width / 2,
         y: canvas.height - 100,
         radius: canvas.width * 0.05,
-        speed: 9,
+        speed: 10,
         mass: 5,
         prevX: canvas.width / 2,
         prevY: canvas.height - 100,
@@ -70,7 +83,7 @@ function init(canvasElement) {
         x: canvas.width / 2,
         y: 100,
         radius: canvas.width * 0.05,
-        speed: 9,
+        speed: 10,
         mass: 5,
         prevX: canvas.width / 2,
         prevY: 100,
@@ -112,7 +125,8 @@ function init(canvasElement) {
         player2,
         walls,
         logo,
-        getLogoLoaded: () => logoLoaded
+        getLogoLoaded: () => logoLoaded,
+        gameMode
     };
 }
 
@@ -195,6 +209,10 @@ function resetPuck() {
     puck.dx = Math.cos(angle) * scaledSpeed;
     puck.dy = Math.sin(angle) * scaledSpeed;
     goalFlashTimer = GOAL_FLASH_DURATION;
+
+    if (gameMode === "1vAI") {
+        ai.resetAI();
+    }
 }
 
 function goalScored(player) {
@@ -209,6 +227,12 @@ function goalScored(player) {
 }
 
 function gameLoop(timestamp) {
+    // Check if exit was requested from the lobby
+    if (isExitRequested) {
+        isExitRequested = false;
+        return; // Stop the game loop
+    }
+
     const deltaTime = Math.min(timestamp - lastUpdateTime, 50); // Cap delta time to prevent jumps
     lastUpdateTime = timestamp;
     
@@ -217,8 +241,16 @@ function gameLoop(timestamp) {
             goalFlashTimer--;
         }
         
+        // Always update player 1
         physics.updatePlayer(player1, deltaTime, canvas, walls);
-        physics.updatePlayer(player2, deltaTime, canvas, walls);
+        
+        // Update player 2 or AI based on game mode
+        if (gameMode === "1vAI") {
+            ai.updateAI(puck, player2, canvas, walls, deltaTime);
+        } else {
+            physics.updatePlayer(player2, deltaTime, canvas, walls);
+        }
+        
         physics.updatePuck(puck, player1, player2, deltaTime, canvas, walls, {
             GOAL_X,
             GOAL_WIDTH,
@@ -244,10 +276,33 @@ function gameLoop(timestamp) {
         GOAL_X,
         GOAL_WIDTH,
         GOAL_HEIGHT,
-        GOAL_FLASH_DURATION
+        GOAL_FLASH_DURATION,
+        gameMode,
+        aiDifficulty
     });
     
     requestAnimationFrame(gameLoop);
+}
+
+function requestExit() {
+    isExitRequested = true;
+    resetGame();
+}
+
+// Add this function to fully reset the game state
+function resetGame() {
+    player1Score = 0;
+    player2Score = 0;
+    lastScorer = null;
+    gameStarted = false;
+    isPaused = false;
+    goalFlashTimer = 0;
+    resetPositions();
+    
+    // Reset AI state if in AI mode
+    if (gameMode === "1vAI") {
+        ai.resetAI();
+    }
 }
 
 // Resize canvas function
@@ -281,6 +336,11 @@ function resizeCanvas(windowWidth, windowHeight) {
     updateGameDimensions();
 }
 
+// Export function to get game mode
+function getGameMode() {
+    return gameMode;
+}
+
 // Export functions that will be used by other modules
 export {
     init,
@@ -289,5 +349,8 @@ export {
     resizeCanvas,
     gameLoop,
     goalScored,
-    updateGameDimensions
+    updateGameDimensions,
+    requestExit,
+    resetGame,
+    getGameMode
 };
