@@ -57,8 +57,8 @@ function initializeGame(canvas, params = {}) {
     // Initial resize to fit the screen
     gameCore.resizeCanvas(window.innerWidth, window.innerHeight);
     
-    // Make game mode and AI difficulty accessible to other modules
-    window.gameCore.gameMode = params.mode || "1v1";
+    // REMOVED: Don't add gameMode directly to window.gameCore
+    // Instead, use the getGameMode function that's already exported
     
     gameInitialized = true;
     console.log(`Air Hockey game initialized successfully! Mode: ${params.mode || '1v1'}${params.difficulty ? ', Difficulty: ' + params.difficulty : ''}`);

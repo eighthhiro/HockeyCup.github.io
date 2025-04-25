@@ -78,7 +78,7 @@ function updateAI(puck, aiPaddle, canvas, walls, deltaTime) {
     }
     
     // Move toward target position with smoothing
-    moveTowardTarget(aiPaddle, deltaTime);
+    moveTowardTarget(aiPaddle, deltaTime, canvas);  // Pass canvas as parameter
 }
 
 // Predict puck trajectory with wall bounces
@@ -166,7 +166,8 @@ function decideAIMove(puck, aiPaddle, canvas, walls) {
 }
 
 // Move AI paddle toward target position with smoothing
-function moveTowardTarget(aiPaddle, deltaTime) {
+// Added canvas parameter to fix "canvas is not defined" error
+function moveTowardTarget(aiPaddle, deltaTime, canvas) {
     const ai = AI_CONFIGURATIONS[currentDifficulty];
     
     // Calculate direction to target
