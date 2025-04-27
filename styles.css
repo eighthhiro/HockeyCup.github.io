@@ -121,14 +121,22 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: background-image 0.5s ease;
 }
 
 .submenu-container {
     width: 90%;
-    max-width: 600px;
+    max-width: 800px;
     display: flex;
     flex-direction: column;
     gap: 20px;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+    max-height: 85vh;
+    overflow-y: auto;
 }
 
 .back-btn {
@@ -158,7 +166,8 @@ body {
 #submenu-options {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 25px;
+    overflow-y: visible;
 }
 
 .submenu-btn {
@@ -190,6 +199,123 @@ body {
 .submenu-btn.coming-soon-btn:hover {
     transform: none;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Level block styling */
+.level-block-container {
+    display: flex;
+    flex-direction: column;
+    background: rgba(20, 30, 70, 0.5);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    margin-bottom: 5px;
+}
+
+.level-banner-container {
+    position: relative;
+    width: 100%;
+    height: 120px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px 10px 0 0;
+}
+
+.level-banner-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+}
+
+.banner-title {
+    position: absolute;
+    bottom: 10px;
+    left: 15px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.levels-list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background: rgba(30, 40, 80, 0.5);
+}
+
+.level-item {
+    width: 100%;
+    padding: 12px 15px;
+    background: transparent;
+    color: white;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.level-item:first-child {
+    border-top: none;
+}
+
+.level-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    padding-left: 25px;
+}
+
+/* Level selection styling (old style, keeping for compatibility) */
+.level-selection-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.level-btn {
+    padding: 15px;
+    font-size: 1.1rem;
+    font-family: 'Orbitron', sans-serif;
+    background: linear-gradient(135deg, #1a2a6c, #483D8B);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+}
+
+.level-btn:hover {
+    background: linear-gradient(135deg, #2a3a9c, #5849AB);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.8);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+.level-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.level-description {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    margin-top: 5px;
+    text-align: center;
 }
 
 /* Game container styling */
@@ -229,8 +355,7 @@ canvas {
 
 /* Styling for stats and settings pages */
 .page-content {
-    width: 90%;
-    max-width: 800px;
+    width: 100%;
     background: rgba(0, 0, 0, 0.5);
     border-radius: 10px;
     padding: 20px;
@@ -336,4 +461,23 @@ input:checked + .slider-toggle {
 
 input:checked + .slider-toggle:before {
     transform: translateX(26px);
+}
+
+/* Add some custom scrollbar styling */
+.submenu-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.submenu-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+.submenu-container::-webkit-scrollbar-thumb {
+    background: rgba(100, 100, 255, 0.5);
+    border-radius: 10px;
+}
+
+.submenu-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 100, 255, 0.8);
 }

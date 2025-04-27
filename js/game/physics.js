@@ -1,4 +1,4 @@
-// physics.js - Handles physics calculations and collisions
+// js/game/physics.js - Handles physics calculations and collisions
 
 // Physics constants
 const FRICTION = 0.992;

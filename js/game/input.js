@@ -1,4 +1,4 @@
-// input.js - Handles user input and controls
+// js/game/input.js - Handles user input and controls
 
 // Set up event listeners for keyboard input
 function setupEventListeners(player1, player2, gameControlCallback) {

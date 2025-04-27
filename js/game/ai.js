@@ -1,4 +1,4 @@
-// ai.js - Balanced AI opponent behavior with improved movement and center-puck handling
+// js/game/ai.js - Balanced AI opponent behavior with improved movement and center-puck handling
 
 // AI difficulty configurations with balanced parameters
 const AI_CONFIGURATIONS = {

@@ -1,4 +1,4 @@
-// renderer.js - Handles all drawing and rendering
+// js/game/renderer.js - Handles all drawing and rendering
 
 // Main drawing function that calls all other drawing functions
 function draw(gameState) {

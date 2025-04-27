@@ -1,4 +1,4 @@
-// gameCore.js - Contains game state, scoring and core game loop
+// js/game/gameCore.js - Contains game state, scoring and core game loop
 let isExitRequested = false;
 import * as ai from './ai.js';
 

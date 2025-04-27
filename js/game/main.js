@@ -1,4 +1,4 @@
-// main.js - The entry point of the application
+// js/game/main.js - The entry point of the application
 
 // Import modules
 import * as gameCore from './gameCore.js';
