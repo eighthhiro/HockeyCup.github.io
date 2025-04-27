@@ -146,23 +146,54 @@ function drawTable(ctx, canvas, walls, logoLoaded, logo, GOAL_X, GOAL_WIDTH) {
 }
 
 function drawGoals(ctx, GOAL_X, GOAL_WIDTH, GOAL_HEIGHT, canvas, goalFlashTimer, lastScorer, GOAL_FLASH_DURATION) {
+    // Calculate the wall coverage (1/3 of the goal height)
+    const wallOverlap = GOAL_HEIGHT / 3;
+    
     // Draw top goal (Player 2's goal)
     if (goalFlashTimer > 0 && lastScorer === 1) {
         // Flash green when Player 1 scores
-        ctx.fillStyle = `rgba(0, 255, 0, ${goalFlashTimer/GOAL_FLASH_DURATION})`;
+        const gradientTop = ctx.createLinearGradient(0, 0, 0, GOAL_HEIGHT);
+        gradientTop.addColorStop(0, `rgba(0, 255, 0, ${goalFlashTimer/GOAL_FLASH_DURATION * 0.3})`);
+        gradientTop.addColorStop(1, `rgba(0, 255, 0, ${goalFlashTimer/GOAL_FLASH_DURATION})`);
+        ctx.fillStyle = gradientTop;
     } else {
-        ctx.fillStyle = "rgba(255, 0, 0, 0.2)";
+        // Create gradient for 3D "hole" effect
+        const gradientTop = ctx.createLinearGradient(0, 0, 0, GOAL_HEIGHT);
+        gradientTop.addColorStop(0, "rgba(255, 0, 0, 0.05)");  // Light at top
+        gradientTop.addColorStop(1, "rgba(255, 0, 0, 0.3)");   // Darker at bottom
+        ctx.fillStyle = gradientTop;
     }
     ctx.fillRect(GOAL_X, 0, GOAL_WIDTH, GOAL_HEIGHT);
     
     // Draw bottom goal (Player 1's goal)
     if (goalFlashTimer > 0 && lastScorer === 2) {
         // Flash green when Player 2 scores
-        ctx.fillStyle = `rgba(0, 255, 0, ${goalFlashTimer/GOAL_FLASH_DURATION})`;
+        const gradientBottom = ctx.createLinearGradient(0, canvas.height - GOAL_HEIGHT, 0, canvas.height);
+        gradientBottom.addColorStop(0, `rgba(0, 255, 0, ${goalFlashTimer/GOAL_FLASH_DURATION * 0.3})`);
+        gradientBottom.addColorStop(1, `rgba(0, 255, 0, ${goalFlashTimer/GOAL_FLASH_DURATION})`);
+        ctx.fillStyle = gradientBottom;
     } else {
-        ctx.fillStyle = "rgba(0, 0, 255, 0.2)";
+        // Create gradient for 3D "hole" effect
+        const gradientBottom = ctx.createLinearGradient(0, canvas.height - GOAL_HEIGHT, 0, canvas.height);
+        gradientBottom.addColorStop(0, "rgba(0, 0, 255, 0.05)");  // Light at top
+        gradientBottom.addColorStop(1, "rgba(0, 0, 255, 0.3)");   // Darker at bottom
+        ctx.fillStyle = gradientBottom;
     }
     ctx.fillRect(GOAL_X, canvas.height - GOAL_HEIGHT, GOAL_WIDTH, GOAL_HEIGHT);
+    
+    // Draw wall overlays (1/3 of the goal) to make goals look like holes in the walls
+    ctx.fillStyle = "#444"; // Similar to walls.color
+    
+    // Top wall overlay (1/3 of goal from the top)
+    ctx.fillRect(GOAL_X, 0, GOAL_WIDTH, wallOverlap);
+    
+    // Bottom wall overlay (1/3 of goal from the bottom)
+    ctx.fillRect(GOAL_X, canvas.height - wallOverlap, GOAL_WIDTH, wallOverlap);
+    
+    // Add subtle shadow at the bottom of the visible goal area
+    ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+    ctx.fillRect(GOAL_X, wallOverlap - 2, GOAL_WIDTH, 2); // Top goal shadow
+    ctx.fillRect(GOAL_X, canvas.height - wallOverlap - 2, GOAL_WIDTH, 2); // Bottom goal shadow
 }
 
 function drawPuck(ctx, puck) {
