@@ -9,6 +9,11 @@ export class UIManager {
         this.submenuOptions = document.getElementById('submenu-options');
         this.canvas = document.getElementById('gameCanvas');
         this.exitGameBtn = document.getElementById('exit-game');
+        this.videoBackground = document.getElementById('video-background');
+        
+        // Cache slider navigation elements
+        this.sliderArrowsContainer = document.querySelector('.slider-arrows-container');
+        this.sliderDotsContainer = document.querySelector('.slider-dots-container');
         
         this.setupEventListeners();
     }
@@ -34,16 +39,24 @@ export class UIManager {
     }
 
     showLobby() {
-        this.submenu.classList.remove('visible');
-        this.submenu.classList.add('hidden');
+        this.hideSubmenu();
         this.lobby.classList.remove('hidden');
         this.lobby.classList.add('visible');
         
+        // Show video background when returning to lobby
+        this.videoBackground.classList.remove('hidden');
+        
         // Clear submenu options
-        this.submenuOptions.innerHTML = '';
+        this.clearSubmenuOptions();
         
         // Remove any background images
-        this.submenu.style.backgroundImage = '';
+        this.setSubmenuBackground('');
+        
+        // Reset submenu classes
+        this.submenu.classList.remove('classic-background');
+        
+        // Hide slider navigation
+        this.hideSliderNavigation();
     }
 
     showSubmenu() {
@@ -53,9 +66,13 @@ export class UIManager {
         this.submenu.classList.add('visible');
     }
 
-    showGameContainer() {
+    hideSubmenu() {
         this.submenu.classList.remove('visible');
         this.submenu.classList.add('hidden');
+    }
+
+    showGameContainer() {
+        this.hideSubmenu();
         this.gameContainer.classList.remove('hidden');
         this.gameContainer.classList.add('visible');
     }
@@ -88,5 +105,47 @@ export class UIManager {
         } else {
             this.submenu.style.backgroundImage = '';
         }
+    }
+    
+    // Methods for slider navigation
+    showSliderNavigation() {
+        if (this.sliderArrowsContainer) {
+            this.sliderArrowsContainer.classList.remove('hidden');
+            this.sliderArrowsContainer.classList.add('visible');
+        }
+        if (this.sliderDotsContainer) {
+            this.sliderDotsContainer.classList.remove('hidden');
+            this.sliderDotsContainer.classList.add('visible');
+        }
+    }
+    
+    hideSliderNavigation() {
+        if (this.sliderArrowsContainer) {
+            this.sliderArrowsContainer.classList.add('hidden');
+            this.sliderArrowsContainer.classList.remove('visible');
+        }
+        if (this.sliderDotsContainer) {
+            this.sliderDotsContainer.classList.add('hidden');
+            this.sliderDotsContainer.classList.remove('visible');
+        }
+    }
+    
+    clearSliderDots() {
+        if (this.sliderDotsContainer) {
+            this.sliderDotsContainer.innerHTML = '';
+        }
+    }
+    
+    // Method to be called when opening a submenu
+    openSubmenu(menuType) {
+        this.setSubmenuTitle(menuType.toUpperCase());
+        this.clearSubmenuOptions();
+        this.setSubmenuBackground('');
+        
+        // Hide slider navigation by default (will be shown for classic mode)
+        this.hideSliderNavigation();
+        this.clearSliderDots();
+        
+        this.showSubmenu();
     }
 }

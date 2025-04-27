@@ -1,13 +1,30 @@
-// js/lobby/menuManager.js - Handles menu options and actions
+// js/lobby/menuManager.js - Updated to include map slider functionality
 export class MenuManager {
     constructor(uiManager, gameManager, menuConfig) {
         this.uiManager = uiManager;
         this.gameManager = gameManager;
         this.menuConfig = menuConfig;
+        this.currentSlideIndex = 0;
+        this.totalSlides = 0;
+        this.initializeBackgrounds();
+    }
+
+    // Initialize video background for lobby
+    initializeBackgrounds() {
+        // Ensure video autoplays on user interaction
+        document.addEventListener('click', () => {
+            const video = document.getElementById('lobby-video');
+            if (video && video.paused) {
+                video.play();
+            }
+        }, { once: true });
     }
 
     openSubmenu(menuType) {
         this.uiManager.setSubmenuTitle(menuType.toUpperCase());
+        
+        // Hide navigation elements by default
+        this.hideSliderNavigation();
         
         if (menuType === 'stats') {
             this.showStatsPage();
@@ -27,68 +44,187 @@ export class MenuManager {
         
         // Add options based on the selected menu
         const options = this.menuConfig[menuType];
-        options.forEach(option => {
-            if (option.levels) {
-                // Create a container for the option with banner and levels
-                const levelBlockContainer = document.createElement('div');
-                levelBlockContainer.className = 'level-block-container';
-                
-                // Create banner area
-                const bannerContainer = document.createElement('div');
-                bannerContainer.className = 'level-banner-container';
-                
-                // If there's a banner image, add it
-                if (option.banner) {
-                    bannerContainer.style.backgroundImage = `url(${option.banner})`;
-                }
-                
-                // Add title overlay to the banner
-                const bannerTitle = document.createElement('div');
-                bannerTitle.className = 'banner-title';
-                bannerTitle.textContent = option.name;
-                bannerContainer.appendChild(bannerTitle);
-                
-                // Create the levels list
-                const levelsList = document.createElement('div');
-                levelsList.className = 'levels-list';
-                
-                // Add level options to the list
-                option.levels.forEach(level => {
-                    const levelItem = document.createElement('button');
-                    levelItem.className = 'level-item';
-                    levelItem.textContent = level.name;
-                    
-                    levelItem.addEventListener('click', () => {
-                        this.handleAction(level.action, level.params);
-                    });
-                    
-                    levelsList.appendChild(levelItem);
-                });
-                
-                // Add banner and levels to the container
-                levelBlockContainer.appendChild(bannerContainer);
-                levelBlockContainer.appendChild(levelsList);
-                this.uiManager.submenuOptions.appendChild(levelBlockContainer);
-                
+        
+        // Check if we have level blocks that should go in the slider
+        const levelBlocks = options.filter(option => option.levels);
+        const regularOptions = options.filter(option => !option.levels);
+        
+        // If we're in classic mode and have level blocks, show the slider navigation
+        if (menuType === 'classic' && levelBlocks.length > 0) {
+            this.showSliderNavigation();
+            this.createMapSlider(levelBlocks);
+        }
+        
+        // Add regular options after the slider
+        regularOptions.forEach(option => {
+            const button = document.createElement('button');
+            button.className = option.comingSoon ? 'submenu-btn coming-soon-btn' : 'submenu-btn';
+            button.textContent = option.name;
+            
+            if (option.comingSoon) {
+                button.innerHTML += ' <span class="coming-soon">Coming Soon</span>';
             } else {
-                // For regular options without levels
-                const button = document.createElement('button');
-                button.className = option.comingSoon ? 'submenu-btn coming-soon-btn' : 'submenu-btn';
-                button.textContent = option.name;
-                
-                if (option.comingSoon) {
-                    button.innerHTML += ' <span class="coming-soon">Coming Soon</span>';
-                } else {
-                    button.addEventListener('click', () => {
-                        this.handleAction(option.action, option.params, option);
-                    });
-                }
-                
-                this.uiManager.submenuOptions.appendChild(button);
+                button.addEventListener('click', () => {
+                    this.handleAction(option.action, option.params, option);
+                });
             }
+            
+            this.uiManager.submenuOptions.appendChild(button);
         });
         
         this.uiManager.showSubmenu();
+    }
+    
+    // Add these new helper methods to MenuManager
+    showSliderNavigation() {
+        const arrowsContainer = document.querySelector('.slider-arrows-container');
+        const dotsContainer = document.querySelector('.slider-dots-container');
+        
+        if (arrowsContainer) arrowsContainer.classList.remove('hidden');
+        if (dotsContainer) dotsContainer.classList.remove('hidden');
+    }
+    
+    hideSliderNavigation() {
+        const arrowsContainer = document.querySelector('.slider-arrows-container');
+        const dotsContainer = document.querySelector('.slider-dots-container');
+        
+        if (arrowsContainer) arrowsContainer.classList.add('hidden');
+        if (dotsContainer) dotsContainer.classList.add('hidden');
+    }
+    
+    createMapSlider(levelBlocks) {
+        // Create the main slider container
+        const sliderContainer = document.createElement('div');
+        sliderContainer.className = 'map-slider-container';
+        
+        // Create the slider track
+        const slider = document.createElement('div');
+        slider.className = 'map-slider';
+        
+        // Get references to the existing containers
+        const dotsContainer = document.querySelector('.slider-dots-container');
+        
+        // Clear any existing dots
+        dotsContainer.innerHTML = '';
+        
+        // Reset current slide index
+        this.currentSlideIndex = 0;
+        this.totalSlides = levelBlocks.length;
+        
+        // Create slides for each level block
+        levelBlocks.forEach((option, index) => {
+            // Create a slide
+            const slide = document.createElement('div');
+            slide.className = 'map-slide';
+            slide.dataset.index = index;
+            
+            // Create level block container
+            const levelBlockContainer = document.createElement('div');
+            levelBlockContainer.className = 'level-block-container';
+            
+            // Create banner area
+            const bannerContainer = document.createElement('div');
+            bannerContainer.className = 'level-banner-container';
+            
+            // If there's a banner image, add it
+            if (option.banner) {
+                const bannerImg = document.createElement('img');
+                bannerImg.src = option.banner;
+                bannerImg.alt = `${option.name} banner`;
+                bannerContainer.appendChild(bannerImg);
+            }
+            
+            // Add title overlay to the banner
+            const bannerTitle = document.createElement('div');
+            bannerTitle.className = 'banner-title';
+            bannerTitle.textContent = option.name;
+            bannerContainer.appendChild(bannerTitle);
+            
+            // Create the levels list
+            const levelsList = document.createElement('div');
+            levelsList.className = 'levels-list';
+            
+            // Add level options to the list
+            option.levels.forEach(level => {
+                const levelItem = document.createElement('button');
+                levelItem.className = 'level-item';
+                levelItem.textContent = level.name;
+                
+                levelItem.addEventListener('click', () => {
+                    this.handleAction(level.action, level.params);
+                });
+                
+                levelsList.appendChild(levelItem);
+            });
+            
+            // Add banner and levels to the container
+            levelBlockContainer.appendChild(bannerContainer);
+            levelBlockContainer.appendChild(levelsList);
+            
+            // Add the level block to the slide
+            slide.appendChild(levelBlockContainer);
+            
+            // Add the slide to the slider
+            slider.appendChild(slide);
+            
+            // Create a dot for this slide
+            const dot = document.createElement('div');
+            dot.className = index === 0 ? 'map-dot active' : 'map-dot';
+            dot.dataset.index = index;
+            dot.addEventListener('click', () => this.goToSlide(index));
+            dotsContainer.appendChild(dot);
+        });
+
+        
+        // Add slider to the container
+        sliderContainer.appendChild(slider);
+        
+        // Add slider to the submenu options
+        this.uiManager.submenuOptions.appendChild(sliderContainer);
+        
+        // Set up arrow event listeners if they haven't been set up already
+        const prevArrow = document.querySelector('.map-arrow-prev');
+        const nextArrow = document.querySelector('.map-arrow-next');
+        
+        if (prevArrow && !prevArrow._hasListener) {
+            prevArrow.addEventListener('click', () => this.navigateSlider('prev'));
+            prevArrow._hasListener = true;
+        }
+        
+        if (nextArrow && !nextArrow._hasListener) {
+            nextArrow.addEventListener('click', () => this.navigateSlider('next'));
+            nextArrow._hasListener = true;
+        }
+    }
+    
+    navigateSlider(direction) {
+        if (direction === 'prev') {
+            this.currentSlideIndex = (this.currentSlideIndex - 1 + this.totalSlides) % this.totalSlides;
+        } else {
+            this.currentSlideIndex = (this.currentSlideIndex + 1) % this.totalSlides;
+        }
+        
+        this.goToSlide(this.currentSlideIndex);
+    }
+    
+    goToSlide(index) {
+        // Update the slider position
+        const slider = document.querySelector('.map-slider');
+        if (slider) {
+            slider.style.transform = `translateX(-${index * 100}%)`;
+        }
+        
+        // Update the active dot
+        const dots = document.querySelectorAll('.map-dot');
+        dots.forEach((dot, i) => {
+            if (i === index) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+        
+        this.currentSlideIndex = index;
     }
 
     handleAction(action, params, option) {

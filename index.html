@@ -10,6 +10,13 @@
     <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
+    <!-- Video Background for Lobby -->
+    <div id="video-background">
+        <video autoplay muted loop id="lobby-video">
+            <source src="./assets/background/lobby.mp4" type="video/mp4">
+        </video>
+    </div>
+
     <div id="lobby" class="visible">
         <div class="lobby-container">
             <div class="game-logo">
@@ -17,10 +24,7 @@
                 <h1>HOCKEY CUP</h1>
             </div>
             <div class="menu-container">
-                <button class="menu-btn" data-menu="classic">
-                    <span class="btn-text">CLASSIC</span>
-                    <span class="coming-soon">Coming Soon</span>
-                </button>
+                <button class="menu-btn" data-menu="classic">CLASSIC</button>
                 <button class="menu-btn" data-menu="duels">DUELS</button>
                 <button class="menu-btn" data-menu="stats">STATS</button>  
                 <button class="menu-btn" data-menu="settings">SETTINGS</button>
@@ -36,11 +40,17 @@
         </div>
     </div>
 
+    <div class="slider-arrows-container hidden">
+        <button class="map-arrow map-arrow-prev">&#10094;</button>
+        <button class="map-arrow map-arrow-next">&#10095;</button>
+    </div>
+    <div class="slider-dots-container hidden"></div>
+
     <div id="game-container" class="hidden">
         <button id="exit-game" class="exit-btn">EXIT TO MENU</button>
         <canvas id="gameCanvas"></canvas>
     </div>
 
-    <script type="module" src="./js/lobby1.js"></script>
+    <script type="module" src="./js/lobby.js"></script>
 </body>
-</html>
+</html>     
