@@ -6,9 +6,9 @@ export const menuConfig = {
             action: "showLevels", 
             params: { mode: "barGame" },
             levels: [
-                { name: "Level 1", action: "startGame", params: { mode: "barGame", level: 1 } },
-                { name: "Level 2", action: "startGame", params: { mode: "barGame", level: 2 } },
-                { name: "Level 3", action: "startGame", params: { mode: "barGame", level: 3 } }
+                { name: "Lightning Larry", action: "startGame", params: { mode: "barGame", level: 1 } },
+                { name: "The Puck Slayer", action: "startGame", params: { mode: "barGame", level: 2 } },
+                { name: "Defense Dio", action: "startGame", params: { mode: "barGame", level: 3 } }
             ],
             banner: "./assets/banner/bar.png"
         },
@@ -17,9 +17,9 @@ export const menuConfig = {
             action: "showLevels", 
             params: { mode: "arcade" },
             levels: [
-                { name: "Level 1", action: "startGame", params: { mode: "arcade", level: 1 } },
-                { name: "Level 2", action: "startGame", params: { mode: "arcade", level: 2 } },
-                { name: "Level 3", action: "startGame", params: { mode: "arcade", level: 3 } }
+                { name: "Tiny Tornado", action: "startGame", params: { mode: "arcade", level: 1 } },
+                { name: "Zippy the Striker", action: "startGame", params: { mode: "arcade", level: 2 } },
+                { name: "Prince Pucks-a-Lot", action: "startGame", params: { mode: "arcade", level: 3 } }
             ],
             banner: "./assets/banner/arcade.png"
         },
@@ -28,9 +28,9 @@ export const menuConfig = {
             action: "showLevels", 
             params: { mode: "tournament" },
             levels: [
-                { name: "Amateur", action: "startGame", params: { mode: "tournament", level: 1 } },
-                { name: "Semi-Pro", action: "startGame", params: { mode: "tournament", level: 2 } },
-                { name: "Professional", action: "startGame", params: { mode: "tournament", level: 3 } }
+                { name: "Colin Cummings", action: "startGame", params: { mode: "tournament", level: 1 } },
+                { name: "Jacob Weissman", action: "startGame", params: { mode: "tournament", level: 2 } },
+                { name: "Danny Hynes", action: "startGame", params: { mode: "tournament", level: 3 } }
             ],
             banner: "./assets/banner/tournament.png"
         },
