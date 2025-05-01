@@ -1,6 +1,7 @@
 // js/game/gameCore.js - Contains game state, scoring and core game loop
 let isExitRequested = false;
 import * as ai from './ai.js';
+import { getOpponentConfig } from './classicOpponents.js';
 
 // Game state
 let player1Score = 0;
@@ -11,9 +12,10 @@ let isPaused = false;
 let goalFlashTimer = 0;
 let lastUpdateTime = performance.now();
 let gameMode = "1v1";
-let aiDifficulty = "medium";
+let aiConfig = null; // Will store opponent configuration
+let currentOpponentName = null;
 
-// Game objects and constants that will be initialized in init()
+// Game objects and constants
 let canvas, ctx;
 let GOAL_WIDTH, GOAL_X, GOAL_HEIGHT;
 let GOAL_FLASH_DURATION = 45;
@@ -40,9 +42,27 @@ function init(canvasElement, params = {}) {
         gameMode = params.mode;
     }
 
-    if (gameMode === "1vAI" && params.difficulty) {
-        aiDifficulty = params.difficulty;
-        ai.initAI(aiDifficulty);
+    // Set up AI configuration based on game mode
+    if (params.aiConfig) {
+        // Direct AI config passed (likely from classic mode)
+        aiConfig = params.aiConfig;
+        currentOpponentName = params.opponentName || null;
+    } else if (gameMode === "1vAI") {
+        // Standard 1vAI mode with difficulty
+        aiConfig = {
+            difficulty: params.difficulty || "medium",
+            reactionTime: params.difficulty === "easy" ? 150 : 
+                         params.difficulty === "hard" ? 60 : 100,
+            maxSpeed: params.difficulty === "easy" ? 0.6 : 
+                     params.difficulty === "hard" ? 0.9 : 0.75,
+            accuracy: params.difficulty === "easy" ? 0.6 : 
+                     params.difficulty === "hard" ? 0.9 : 0.75
+        };
+    }
+
+    // Initialize AI with the configuration
+    if (aiConfig) {
+        ai.initAI(aiConfig);
     }
 
     // Create game objects
@@ -126,7 +146,9 @@ function init(canvasElement, params = {}) {
         walls,
         logo,
         getLogoLoaded: () => logoLoaded,
-        gameMode
+        gameMode,
+        currentOpponentName,
+        aiConfig
     };
 }
 
@@ -227,13 +249,12 @@ function goalScored(player) {
 }
 
 function gameLoop(timestamp) {
-    // Check if exit was requested from the lobby
     if (isExitRequested) {
         isExitRequested = false;
-        return; // Stop the game loop
+        return;
     }
 
-    const deltaTime = Math.min(timestamp - lastUpdateTime, 50); // Cap delta time to prevent jumps
+    const deltaTime = Math.min(timestamp - lastUpdateTime, 50);
     lastUpdateTime = timestamp;
     
     if (gameStarted && !isPaused) {
@@ -245,7 +266,9 @@ function gameLoop(timestamp) {
         physics.updatePlayer(player1, deltaTime, canvas, walls);
         
         // Update player 2 or AI based on game mode
-        if (gameMode === "1vAI") {
+        if (gameMode === "1vAI" || gameMode === "barGame" || 
+            gameMode === "arcade" || gameMode === "tournament" || 
+            gameMode === "space") {
             ai.updateAI(puck, player2, canvas, walls, deltaTime);
         } else {
             physics.updatePlayer(player2, deltaTime, canvas, walls);
@@ -258,6 +281,7 @@ function gameLoop(timestamp) {
         });
     }
     
+    // Enhanced renderer call with opponent info
     renderer.draw({
         ctx,
         canvas,
@@ -278,7 +302,8 @@ function gameLoop(timestamp) {
         GOAL_HEIGHT,
         GOAL_FLASH_DURATION,
         gameMode,
-        aiDifficulty
+        aiConfig,
+        currentOpponentName
     });
     
     requestAnimationFrame(gameLoop);
