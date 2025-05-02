@@ -1,0 +1,369 @@
+/* classic-mode.css - Optimized Classic Mode Styles */
+.classic-mode-submenu {
+    --banner-height: 40vh;
+    --list-height: 60vh;
+    --banner-arrow-size: 60px;
+    --level-item-height: 80px;
+    --transition-duration: 0.3s;
+}
+
+/* Main Container Styles */
+.classic-mode-submenu .submenu-container,
+.classic-mode-submenu .map-slider-container,
+.classic-mode-submenu .map-slider,
+.classic-mode-submenu .map-slide {
+    max-width: 50vw !important;
+    width: 100vw !important;
+    height: 90vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    border-radius: 0;
+}
+
+.classic-background {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('../assets/background/classic.png') !important;
+    background-size: cover !important;
+    background-position: center !important;
+}
+
+/* Hide the submenu-title in classic mode */
+.classic-mode-submenu #submenu-title {
+    display: none !important;
+}
+
+/* Map Slide Transitions */
+.classic-mode-submenu .map-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: opacity var(--transition-duration) ease;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.classic-mode-submenu .map-slide.active {
+    opacity: 1;
+    pointer-events: all;
+    z-index: 5;
+}
+
+/* Level Block Container */
+.classic-mode-submenu .level-block-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: rgba(20, 30, 70, 0.5);
+    border: 2px solid rgba(100, 100, 255, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+/* Banner Section */
+.classic-mode-submenu .level-banner-container {
+    height: var(--banner-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background-size: cover !important;
+    background-position: 0 -100px !important;
+    overflow: hidden;
+}
+
+.classic-mode-submenu .level-banner-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+    z-index: 1;
+}
+
+.classic-mode-submenu .banner-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 2;
+}
+
+.classic-mode-submenu .banner-arrow {
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    width: var(--banner-arrow-size);
+    height: var(--banner-arrow-size);
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin: 0 24px;
+    z-index: 2;
+    box-shadow: 0 0 20px rgba(100, 150, 255, 0.5);
+    transition: all var(--transition-duration) ease;
+}
+
+.classic-mode-submenu .banner-arrow:hover {
+    background: rgba(50, 80, 150, 0.9);
+    transform: scale(1.1);
+}
+
+.classic-mode-submenu .banner-title {
+    font-size: 3rem;
+    text-shadow: 0 0 20px rgba(100, 150, 255, 0.8);
+    padding: 20px 40px;
+    color: #fff;
+    z-index: 2;
+    text-align: center;
+    flex: 1 1 auto;
+}
+
+/* Levels List Section */
+.classic-mode-submenu .levels-list {
+    height: var(--list-height);
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    border-top: 2px solid rgba(100, 100, 255, 0.3);
+}
+
+/* Level Item Styles - Now Expandable */
+/* Card-based Level Items for Classic Mode */
+.classic-mode-submenu .levels-list {
+    height: var(--list-height);
+    background: rgba(0, 0, 0, 0.7);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px;
+    overflow-y: auto;
+    border-top: 2px solid rgba(100, 100, 255, 0.3);
+}
+
+/* Level Item Card Styles */
+.classic-mode-submenu .level-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    height: 220px;
+    border-radius: 8px;
+    background-position: -30px center;
+    background-size: cover;
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+    border: 2px solid rgba(100, 150, 255, 0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    transition: all var(--transition-duration) ease;
+    cursor: pointer;
+}
+
+/* Overlay for better text readability */
+.classic-mode-submenu .level-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, 
+        rgba(0, 0, 0, 0.5) 0%, 
+        rgba(0, 0, 0, 0.3) 40%, 
+        rgba(0, 0, 0, 0.7) 100%);
+    z-index: 1;
+}
+
+.classic-mode-submenu .level-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(100, 150, 255, 0.3);
+    border-color: rgba(100, 150, 255, 0.8);
+}
+
+.classic-mode-submenu .level-item.completed {
+    border-color: rgba(0, 255, 0, 0.5);
+}
+
+.classic-mode-submenu .level-item.highlighted {
+    border-color: rgba(100, 200, 255, 0.8);
+    box-shadow: 0 0 20px 2px rgba(100, 200, 255, 0.3);
+}
+
+/* Level Content (Name) */
+.classic-mode-submenu .level-content {
+    padding: 15px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+    z-index: 2;
+    text-align: center;
+}
+
+/* Remove Character Image from its original position */
+.classic-mode-submenu .level-character-img {
+    display: none;
+}
+
+/* Completion Stars - Repositioned to bottom */
+.classic-mode-submenu .level-completion {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 2;
+    width: 100%;
+    border-top: 1px solid rgba(100, 150, 255, 0.3);
+}
+
+.classic-mode-submenu .puck-star {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    background-color: rgba(0, 0, 0, 0.5);
+    position: relative;
+    transition: all var(--transition-duration) ease;
+}
+
+.classic-mode-submenu .puck-star.earned {
+    background: radial-gradient(circle at center, #f5f5f5 0%, #a0a0a0 60%, #888 100%);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    border-color: #fff;
+}
+
+/* Navigation Arrows */
+.classic-mode-submenu .map-arrow {
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all var(--transition-duration) ease;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+
+.classic-mode-submenu .map-arrow:hover {
+    background: rgba(0, 0, 0, 0.8);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.classic-mode-submenu .map-arrow:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.classic-mode-submenu .map-arrow-prev {
+    left: 150px;
+}
+
+.classic-mode-submenu .map-arrow-next {
+    right: 150px;
+}
+
+/* Neon Transition Overlay */
+.classic-mode-submenu .transition-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.classic-mode-submenu .transition-overlay.active {
+    opacity: 1;
+}
+
+.classic-mode-submenu .transition-overlay .left-side,
+.classic-mode-submenu .transition-overlay .right-side {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    animation: darkNeonPulse 2.5s infinite;
+}
+
+.classic-mode-submenu .transition-overlay .left-side {
+    left: 0;
+    background-color: rgba(150, 10, 40, 0.95);
+    transform: translateX(-100%);
+    box-shadow: 0 0 12px 3px rgba(180, 15, 50, 0.7), 0 0 20px 7px rgba(180, 15, 50, 0.4);
+}
+
+.classic-mode-submenu .transition-overlay .right-side {
+    right: 0;
+    background-color: rgba(15, 80, 180, 0.95);
+    transform: translateX(100%);
+    box-shadow: 0 0 12px 3px rgba(20, 100, 200, 0.7), 0 0 20px 7px rgba(20, 100, 200, 0.4);
+}
+
+.classic-mode-submenu .transition-overlay.active .left-side,
+.classic-mode-submenu .transition-overlay.active .right-side {
+    transform: translateX(0);
+}
+
+/* Edge light effect when panels meet in the middle */
+.classic-mode-submenu .transition-overlay.active .left-side::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 5px;
+    height: 100%;
+    background: rgba(220, 20, 60, 0.8);
+    box-shadow: 0 0 8px 2px rgba(180, 15, 50, 0.8), 0 0 15px 4px rgba(180, 15, 50, 0.5);
+    opacity: 0.7;
+}
+
+.classic-mode-submenu .transition-overlay.active .right-side::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    background: rgba(20, 100, 200, 0.8);
+    box-shadow: 0 0 8px 2px rgba(20, 100, 200, 0.8), 0 0 15px 4px rgba(20, 100, 200, 0.5);
+    opacity: 0.7;
+}
+
+/* Dark neon pulse animation - subtle for darker tones */
+@keyframes darkNeonPulse {
+    0% { opacity: 0.95; filter: brightness(1); }
+    50% { opacity: 1; filter: brightness(1.2); }
+    100% { opacity: 0.95; filter: brightness(1); }
+}
+
+/* Back Button */
+.classic-mode-submenu .back-btn {
+    top: 20px;
+    z-index: 999;
+}

@@ -1,4 +1,4 @@
-// js/lobby/uiManager.js - Handles UI-related functions
+// js/lobby/uiManager.js - Updated to support classic mode enhancements
 export class UIManager {
     constructor() {
         // Cache DOM elements
@@ -13,7 +13,7 @@ export class UIManager {
         
         // Cache slider navigation elements
         this.sliderArrowsContainer = document.querySelector('.slider-arrows-container');
-        this.sliderDotsContainer = document.querySelector('.slider-dots-container');
+        this.transitionOverlay = document.querySelector('.transition-overlay');
         
         this.setupEventListeners();
     }
@@ -53,7 +53,7 @@ export class UIManager {
         this.setSubmenuBackground('');
         
         // Reset submenu classes
-        this.submenu.classList.remove('classic-background');
+        this.submenu.classList.remove('classic-background', 'classic-mode-submenu');
         
         // Hide slider navigation
         this.hideSliderNavigation();
@@ -124,16 +124,6 @@ export class UIManager {
             this.sliderArrowsContainer.classList.add('hidden');
             this.sliderArrowsContainer.classList.remove('visible');
         }
-        if (this.sliderDotsContainer) {
-            this.sliderDotsContainer.classList.add('hidden');
-            this.sliderDotsContainer.classList.remove('visible');
-        }
-    }
-    
-    clearSliderDots() {
-        if (this.sliderDotsContainer) {
-            this.sliderDotsContainer.innerHTML = '';
-        }
     }
     
     // Method to be called when opening a submenu
@@ -144,7 +134,20 @@ export class UIManager {
         
         // Hide slider navigation by default (will be shown for classic mode)
         this.hideSliderNavigation();
-        this.clearSliderDots();
+        
+        // Reset submenu special classes
+        this.submenu.classList.remove('classic-background', 'classic-mode-submenu');
+        
+        // For classic mode, apply special styling and hide video background
+        if (menuType === 'classic') {
+            this.submenu.classList.add('classic-background', 'classic-mode-submenu');
+            this.videoBackground.classList.add('hidden');
+            
+            // Ensure transition overlay is ready
+            if (this.transitionOverlay) {
+                this.transitionOverlay.classList.remove('active');
+            }
+        }
         
         this.showSubmenu();
     }
