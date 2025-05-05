@@ -5,6 +5,7 @@ export class MenuManager {
         this.menuConfig = menuConfig;
         this.currentSlideIndex = 0;
         this.totalSlides = 0;
+        this.currentSubmenu = null;
         this.initializeBackgrounds();
     }
 
@@ -18,6 +19,7 @@ export class MenuManager {
     }
 
     openSubmenu(menuType) {
+        this.currentSubmenu = menuType;
         this.uiManager.setSubmenuTitle(menuType.toUpperCase());
         this.hideSliderNavigation();
 

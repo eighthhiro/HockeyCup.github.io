@@ -2,6 +2,7 @@
 let isExitRequested = false;
 import * as ai from './ai.js';
 import { getOpponentConfig } from './classicOpponents.js';
+import { VictoryScreen } from './victoryScreen.js';
 
 // Game state
 let player1Score = 0;
@@ -14,6 +15,8 @@ let lastUpdateTime = performance.now();
 let gameMode = "1v1";
 let aiConfig = null; // Will store opponent configuration
 let currentOpponentName = null;
+let victoryScreen = null;
+let menuManager = null;
 
 // Game objects and constants
 let canvas, ctx;
@@ -40,6 +43,11 @@ function init(canvasElement, params = {}) {
     
     if (params.mode) {
         gameMode = params.mode;
+    }
+    
+    // Store menu manager reference if provided
+    if (params.menuManager) {
+        menuManager = params.menuManager;
     }
 
     // Set up AI configuration based on game mode
@@ -133,6 +141,11 @@ function init(canvasElement, params = {}) {
     // Set up event listeners
     input.setupEventListeners(player1, player2, handleGameControls);
     
+    // Initialize victory screen if not already created
+    if (!victoryScreen) {
+        victoryScreen = new VictoryScreen(window.gameCore, menuManager);
+    }
+    
     // Start game loop
     requestAnimationFrame(gameLoop);
     
@@ -153,6 +166,11 @@ function init(canvasElement, params = {}) {
 }
 
 function handleGameControls(key, isPressed) {
+    // Skip handling if victory screen is showing
+    if (victoryScreen && victoryScreen.isActive) {
+        return false;
+    }
+    
     // Handle space key for game start
     if (key === " " && !gameStarted && !isPressed) {
         gameStarted = true;
@@ -232,20 +250,71 @@ function resetPuck() {
     puck.dy = Math.sin(angle) * scaledSpeed;
     goalFlashTimer = GOAL_FLASH_DURATION;
 
-    if (gameMode === "1vAI") {
+    if (gameMode === "1vAI" || ['barGame', 'arcade', 'tournament', 'space'].includes(gameMode)) {
         ai.resetAI();
     }
 }
 
 function goalScored(player) {
+    // Determine max score based on game mode
+    const maxScore = (gameMode === "barGame" || 
+                      gameMode === "arcade" || 
+                      gameMode === "tournament" || 
+                      gameMode === "space") ? 3 : 10;
+    
     if (player === 1) {
         player1Score++;
         lastScorer = 1;
+        
+        // Check for game end
+        if (player1Score >= maxScore) {
+            // Handle game win for player 1
+            showGameEnd(1);
+        } else {
+            resetPuck();
+        }
     } else {
         player2Score++;
         lastScorer = 2;
+        
+        // Check for game end
+        if (player2Score >= maxScore) {
+            // Handle game win for player 2
+            showGameEnd(2);
+        } else {
+            resetPuck();
+        }
     }
-    resetPuck();
+}
+
+function showGameEnd(winner) {
+    // Calculate stars based on performance (for classic mode)
+    let stars = 0;
+    if (winner === 1) {
+        const scoreDiff = player1Score - player2Score;
+        if (scoreDiff >= 3) {
+            stars = 3; // Perfect win
+        } else if (scoreDiff >= 2) {
+            stars = 2; // Good win
+        } else {
+            stars = 1; // Win
+        }
+    }
+    
+    // Pause the game
+    isPaused = true;
+    
+    // Show victory screen with appropriate message
+    if (victoryScreen) {
+        // For classic mode games
+        if (['barGame', 'arcade', 'tournament', 'space'].includes(gameMode)) {
+            // Don't set automatic return to selection - let the victory screen handle it
+            victoryScreen.showVictory('match', winner, player1Score, player2Score, stars, currentOpponentName);
+        } else {
+            // For regular versus games
+            victoryScreen.showVictory('match', winner, player1Score, player2Score);
+        }
+    }
 }
 
 function gameLoop(timestamp) {
@@ -325,7 +394,7 @@ function resetGame() {
     resetPositions();
     
     // Reset AI state if in AI mode
-    if (gameMode === "1vAI") {
+    if (gameMode === "1vAI" || ['barGame', 'arcade', 'tournament', 'space'].includes(gameMode)) {
         ai.resetAI();
     }
 }
@@ -366,6 +435,15 @@ function getGameMode() {
     return gameMode;
 }
 
+// Export functions to get scores
+function getPlayer1Score() {
+    return player1Score;
+}
+
+function getPlayer2Score() {
+    return player2Score;
+}
+
 // Export functions that will be used by other modules
 export {
     init,
@@ -377,5 +455,7 @@ export {
     updateGameDimensions,
     requestExit,
     resetGame,
-    getGameMode
+    getGameMode,
+    getPlayer1Score,
+    getPlayer2Score
 };

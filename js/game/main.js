@@ -7,12 +7,14 @@ import * as input from './input.js';
 import * as renderer from './renderer.js';
 import { getOpponentConfig } from './classicOpponents.js';
 import { getDefaultAIDifficulty } from './ai.js';
+import { VictoryScreen } from './victoryScreen.js';
 
 // Expose gameCore to window to solve circular dependency
 window.gameCore = gameCore;
 
 // Flag to track if game has been initialized
 let gameInitialized = false;
+let victoryScreen = null;
 
 // Initialize game when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
@@ -40,15 +42,17 @@ document.addEventListener('DOMContentLoaded', () => {
 // Function to initialize the game
 function initializeGame(canvas, params = {}) {
     let aiConfig = null;
+    let opponentName = null;
     
     // Determine AI configuration based on game mode
     if (params.mode && ['barGame', 'arcade', 'tournament', 'space'].includes(params.mode)) {
         // Classic mode: use the named opponent's config
         if (params.opponentName) {
+            opponentName = params.opponentName;
             aiConfig = getOpponentConfig(params.opponentName);
         } else {
             // Fallback: get opponent config based on level if name isn't provided
-            const opponentName = getDefaultOpponentName(params.mode, params.level);
+            opponentName = getDefaultOpponentName(params.mode, params.level);
             aiConfig = getOpponentConfig(opponentName);
         }
     } else if (params.mode === "1vAI") {
@@ -57,17 +61,35 @@ function initializeGame(canvas, params = {}) {
     }
     // For 1v1 mode, aiConfig remains null
 
+    // Get menuManager reference from the lobby system if available
+    const menuManager = window.lobbySystem?.menuManager || null;
+    
+    // Initialize the victory screen if not already done
+    if (!victoryScreen) {
+        victoryScreen = new VictoryScreen(gameCore, menuManager);
+    }
+    
     if (gameInitialized) {
         gameCore.resetGame();
         if (params.mode) {
             // Reinitialize with new game mode and parameters
-            gameCore.init(canvas, { ...params, aiConfig });
+            gameCore.init(canvas, { 
+                ...params, 
+                aiConfig, 
+                opponentName,
+                menuManager
+            });
         }
         return;
     }
     
-    // Initialize the game with parameters
-    const gameObjects = gameCore.init(canvas, { ...params, aiConfig });
+    // Initialize the game with parameters and pass menuManager
+    const gameObjects = gameCore.init(canvas, { 
+        ...params, 
+        aiConfig, 
+        opponentName,
+        menuManager
+    });
     
     // Set up window resize event handling
     window.addEventListener('resize', () => {
@@ -78,7 +100,7 @@ function initializeGame(canvas, params = {}) {
     gameCore.resizeCanvas(window.innerWidth, window.innerHeight);
     
     gameInitialized = true;
-    console.log(`Air Hockey game initialized successfully! Mode: ${params.mode || '1v1'}${params.difficulty ? ', Difficulty: ' + params.difficulty : ''}`);
+    console.log(`Air Hockey game initialized successfully! Mode: ${params.mode || '1v1'}${params.difficulty ? ', Difficulty: ' + params.difficulty : ''}${opponentName ? ', Opponent: ' + opponentName : ''}`);
 }
 
 // Helper function to get default opponent name if not provided

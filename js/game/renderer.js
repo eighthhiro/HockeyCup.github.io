@@ -20,7 +20,9 @@ function draw(gameState) {
         GOAL_X,
         GOAL_WIDTH,
         GOAL_HEIGHT,
-        GOAL_FLASH_DURATION
+        GOAL_FLASH_DURATION,
+        gameMode,
+        currentOpponentName
     } = gameState;
 
     drawTable(ctx, canvas, walls, logoLoaded, logo, GOAL_X, GOAL_WIDTH);
@@ -30,14 +32,179 @@ function draw(gameState) {
     drawPuck(ctx, puck);
     drawPaddle(ctx, player1);
     drawPaddle(ctx, player2);
-    drawScores(ctx, canvas, player1Score, player2Score, player1, player2);
+    
+    // Instead of drawing scores on canvas, update the DOM elements
+    updateDOMScoreElements(player1Score, player2Score, player1, player2, gameMode, currentOpponentName);
     
     // Draw overlays if needed
     if (!gameStarted) {
-        drawStartScreen(ctx, canvas, gameState.gameMode, gameState.aiDifficulty);
+        drawStartScreen(ctx, canvas, gameMode, gameState.aiConfig?.difficulty);
     } else if (isPaused) {
         drawPauseScreen(ctx, canvas);
     }
+}
+
+// New function to update the DOM score elements
+function updateDOMScoreElements(player1Score, player2Score, player1, player2, gameMode, currentOpponentName) {
+    const leftScoreElement = document.getElementById('leftScore');
+    const rightScoreElement = document.getElementById('rightScore');
+    
+    if (!leftScoreElement || !rightScoreElement) return;
+    
+    // Clear previous content
+    leftScoreElement.innerHTML = '';
+    rightScoreElement.innerHTML = '';
+    
+    if (gameMode === "barGame" || gameMode === "arcade" || 
+        gameMode === "tournament" || gameMode === "space") {
+        // Classic mode (3-puck system)
+        createClassicScoreDOM(leftScoreElement, player2Score, player2.color, "PLAYER 2", currentOpponentName);
+        createClassicScoreDOM(rightScoreElement, player1Score, player1.color, "PLAYER 1");
+    } else {
+        // Duel mode (scoreboard)
+        createDuelScoreboardDOM(leftScoreElement, player2Score, player2.color, "PLAYER 2", currentOpponentName);
+        createDuelScoreboardDOM(rightScoreElement, player1Score, player1.color, "PLAYER 1");
+    }
+}
+
+// Create DOM elements for classic 3-puck scoring system
+function createClassicScoreDOM(containerElement, score, color, playerName, opponentName = null) {
+    const winningScore = 3; // Number of pucks needed to win
+    
+    // Create container for score display
+    const scoreContainer = document.createElement('div');
+    scoreContainer.style.display = 'flex';
+    scoreContainer.style.flexDirection = 'column';
+    scoreContainer.style.alignItems = 'center';
+    scoreContainer.style.gap = '10px';
+    scoreContainer.style.padding = '20px';
+    scoreContainer.style.width = '100%';
+    
+    // Player name
+    const nameElement = document.createElement('div');
+    nameElement.textContent = opponentName || playerName;
+    nameElement.style.color = color;
+    nameElement.style.fontWeight = 'bold';
+    nameElement.style.fontSize = '1.2rem';
+    nameElement.style.marginBottom = '15px';
+    
+    // Add crown if player is winning
+    if (score > 0 && score > (winningScore - score)) {
+        const crown = document.createElement('div');
+        crown.innerHTML = '👑';
+        crown.style.fontSize = '1.5rem';
+        crown.style.marginBottom = '5px';
+        scoreContainer.appendChild(crown);
+    }
+    
+    // Add pucks for score
+    const pucksContainer = document.createElement('div');
+    pucksContainer.style.display = 'flex';
+    pucksContainer.style.flexDirection = 'column';
+    pucksContainer.style.alignItems = 'center';
+    pucksContainer.style.gap = '15px';
+    
+    for (let i = 0; i < winningScore; i++) {
+        const puck = document.createElement('div');
+        puck.style.width = '30px';
+        puck.style.height = '30px';
+        puck.style.borderRadius = '50%';
+        puck.style.border = `2px solid ${color}`;
+        
+        if (i < score) {
+            puck.style.backgroundColor = color;
+            // Add shine effect
+            puck.style.backgroundImage = 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%)';
+        }
+        
+        pucksContainer.appendChild(puck);
+    }
+    
+    scoreContainer.appendChild(nameElement);
+    scoreContainer.appendChild(pucksContainer);
+    containerElement.appendChild(scoreContainer);
+}
+
+// Create DOM elements for duel scoreboard
+function createDuelScoreboardDOM(containerElement, score, color, playerName, opponentName = null) {
+    const maxScore = 10;
+    
+    // Create container for score display
+    const scoreContainer = document.createElement('div');
+    scoreContainer.style.display = 'flex';
+    scoreContainer.style.flexDirection = 'column';
+    scoreContainer.style.alignItems = 'center';
+    scoreContainer.style.gap = '10px';
+    scoreContainer.style.padding = '20px';
+    scoreContainer.style.width = '100%';
+    
+    // Player icon
+    const iconContainer = document.createElement('div');
+    iconContainer.style.width = '50px';
+    iconContainer.style.height = '50px';
+    iconContainer.style.borderRadius = '50%';
+    iconContainer.style.backgroundColor = color;
+    iconContainer.style.boxShadow = `0 0 20px ${color}`;
+    iconContainer.style.position = 'relative';
+    
+    // Add highlight to icon
+    const highlight = document.createElement('div');
+    highlight.style.position = 'absolute';
+    highlight.style.width = '20px';
+    highlight.style.height = '20px';
+    highlight.style.borderRadius = '50%';
+    highlight.style.backgroundColor = 'rgba(255,255,255,0.7)';
+    highlight.style.top = '20%';
+    highlight.style.left = '20%';
+    iconContainer.appendChild(highlight);
+    
+    // Score display
+    const scoreElement = document.createElement('div');
+    scoreElement.textContent = score;
+    scoreElement.style.color = color;
+    scoreElement.style.fontWeight = 'bold';
+    scoreElement.style.fontSize = '3rem';
+    scoreElement.style.margin = '10px 0';
+    
+    // Player name
+    const nameElement = document.createElement('div');
+    nameElement.textContent = opponentName || playerName;
+    nameElement.style.color = color;
+    nameElement.style.fontWeight = 'bold';
+    nameElement.style.fontSize = '1.2rem';
+    
+    // Progress bar container
+    const progressContainer = document.createElement('div');
+    progressContainer.style.width = '12px';
+    progressContainer.style.height = '60%';
+    progressContainer.style.backgroundColor = 'rgba(255,255,255,0.2)';
+    progressContainer.style.position = 'relative';
+    progressContainer.style.marginTop = '10px';
+    
+    // Progress bar fill
+    const progressFill = document.createElement('div');
+    progressFill.style.width = '100%';
+    progressFill.style.height = `${(score / maxScore) * 100}%`;
+    progressFill.style.backgroundColor = color;
+    progressFill.style.position = 'absolute';
+    progressFill.style.bottom = '0';
+    progressContainer.appendChild(progressFill);
+    
+    // Add crown if player is winning
+    if (score > 0) {
+        const crown = document.createElement('div');
+        crown.innerHTML = '👑';
+        crown.style.fontSize = '1.5rem';
+        crown.style.marginBottom = '10px';
+        crown.style.display = score > (maxScore - score) ? 'block' : 'none';
+        scoreContainer.appendChild(crown);
+    }
+    
+    scoreContainer.appendChild(iconContainer);
+    scoreContainer.appendChild(scoreElement);
+    scoreContainer.appendChild(nameElement);
+    scoreContainer.appendChild(progressContainer);
+    containerElement.appendChild(scoreContainer);
 }
 
 function drawTable(ctx, canvas, walls, logoLoaded, logo, GOAL_X, GOAL_WIDTH) {
@@ -320,7 +487,7 @@ export {
     drawGoals,
     drawPuck,
     drawPaddle,
-    drawScores,
+    updateDOMScoreElements,
     drawStartScreen,
     drawPauseScreen
 };
